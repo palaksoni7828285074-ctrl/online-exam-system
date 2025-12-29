@@ -2,7 +2,7 @@
 
 **Palak Soni**  
 GitHub: [palaksoni7828285074-ctrl](https://github.com/palaksoni7828285074-ctrl)  
-Email: palaksoni@example.com
+Email: palaksoni7828285074@gmail.com
 
 ## Project Repository
 
