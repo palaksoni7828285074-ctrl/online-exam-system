@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block title %}Exam History{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2><i class="bi bi-clock-history"></i> Exam History</h2>
+</div>
+
+<div class="card shadow">
+    <div class="card-body">
+        {% if results %}
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>#</th>
+                        <th>Exam Title</th>
+                        <th>Subject</th>
+                        <th>Score</th>
+                        <th>Percentage</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in results %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ result.exam.title }}</td>
+                        <td>{{ result.exam.subject.name }}</td>
+                        <td>{{ result.score }}/{{ result.total_marks }}</td>
+                        <td>{{ "%.2f"|format(result.percentage) }}%</td>
+                        <td>
+                            <span class="badge {% if result.status == 'pass' %}bg-success{% else %}bg-danger{% endif %}">
+                                {{ result.status.upper() }}
+                            </span>
+                        </td>
+                        <td>{{ result.attempted_at.strftime('%Y-%m-%d') }}</td>
+                        <td>
+                            <a href="{{ url_for('student.view_result', result_id=result.id) }}" 
+                               class="btn btn-sm btn-primary">
+                                <i class="bi bi-eye"></i> View
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-center text-muted">No exam history available.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

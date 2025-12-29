@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Add Question{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-10">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="bi bi-plus-circle"></i> Add Question to {{ exam.title }}</h4>
+            </div>
+            <div class="card-body p-4">
+                <form method="POST" action="{{ url_for('admin.add_question', exam_id=exam.id) }}">
+                    <div class="mb-3">
+                        <label for="question_text" class="form-label">Question Text *</label>
+                        <textarea class="form-control" id="question_text" name="question_text" 
+                                  rows="3" placeholder="Enter your question here..." required></textarea>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="option_a" class="form-label">Option A *</label>
+                            <input type="text" class="form-control" id="option_a" name="option_a" 
+                                   placeholder="First option" required>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="option_b" class="form-label">Option B *</label>
+                            <input type="text" class="form-control" id="option_b" name="option_b" 
+                                   placeholder="Second option" required>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="option_c" class="form-label">Option C *</label>
+                            <input type="text" class="form-control" id="option_c" name="option_c" 
+                                   placeholder="Third option" required>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="option_d" class="form-label">Option D *</label>
+                            <input type="text" class="form-control" id="option_d" name="option_d" 
+                                   placeholder="Fourth option" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="correct_answer" class="form-label">Correct Answer *</label>
+                            <select class="form-select" id="correct_answer" name="correct_answer" required>
+                                <option value="">-- Select Correct Answer --</option>
+                                <option value="A">A</option>
+                                <option value="B">B</option>
+                                <option value="C">C</option>
+                                <option value="D">D</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label for="marks" class="form-label">Marks *</label>
+                            <input type="number" class="form-control" id="marks" name="marks" 
+                                   value="1" min="1" required>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('admin.questions', exam_id=exam.id) }}" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Cancel
+                        </a>
+                        <button type="submit" name="add_more" class="btn btn-info">
+                            <i class="bi bi-plus-circle"></i> Add & Continue
+                        </button>
+                        <button type="submit" class="btn btn-success">
+                            <i class="bi bi-save"></i> Add & Finish
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

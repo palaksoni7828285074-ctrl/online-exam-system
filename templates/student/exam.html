@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}{{ exam.title }} - Exam{% endblock %}
+
+{% block extra_css %}
+<style>
+    .question-nav button {
+        margin: 5px;
+    }
+    .exam-timer {
+        position: fixed;
+        top: 70px;
+        right: 20px;
+        z-index: 1000;
+        font-size: 1.5rem;
+        padding: 15px;
+    }
+    .option-card {
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    .option-card:hover {
+        background-color: #f0f0f0;
+        transform: scale(1.02);
+    }
+    .option-card.selected {
+        background-color: #d1ecf1;
+        border-color: #0c5460;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="alert alert-warning exam-timer">
+    <i class="bi bi-clock-fill"></i> <span id="timer">{{ remaining_time }}:00</span>
+</div>
+
+<div class="card shadow">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0">{{ exam.title }}</h4>
+        <small>Subject: {{ exam.subject.name }} | Total Questions: {{ questions|length }}</small>
+    </div>
+    <div class="card-body">
+        {% for question in questions %}
+        <div class="question-container" id="question-{{ loop.index0 }}" 
+             style="display: {% if loop.index0 == current_index %}block{% else %}none{% endif %};">
+            <h5>Question {{ loop.index }} of {{ questions|length }}</h5>
+            <hr>
+            <p class="fs-5"><strong>{{ question.question_text }}</strong></p>
+            
+            <div class="row mt-4">
+                <div class="col-md-6 mb-3">
+                    <div class="card option-card" onclick="selectOption({{ question.id }}, 'A', this)">
+                        <div class="card-body">
+                            <h6><strong>A)</strong> {{ question.option_a }}</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card option-card" onclick="selectOption({{ question.id }}, 'B', this)">
+                        <div class="card-body">
+                            <h6><strong>B)</strong> {{ question.option_b }}</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card option-card" onclick="selectOption({{ question.id }}, 'C', this)">
+                        <div class="card-body">
+                            <h6><strong>C)</strong> {{ question.option_c }}</h6>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                    <div class="card option-card" onclick="selectOption({{ question.id }}, 'D', this)">
+                        <div class="card-body">
+                            <h6><strong>D)</strong> {{ question.option_d }}</h6>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between mt-4">
+                <button type="button" class="btn btn-secondary" 
+                        onclick="navigateQuestion({{ loop.index0 - 1 }})"
+                        {% if loop.index0 == 0 %}disabled{% endif %}>
+                    <i class="bi bi-arrow-left"></i> Previous
+                </button>
+                
+                {% if loop.last %}
+                <form method="POST" action="{{ url_for('student.submit_exam', exam_id=exam.id) }}" id="submitForm">
+                    <button type="submit" class="btn btn-success" 
+                            onclick="return confirm('Submit exam? You cannot change answers after submission.');">
+                        <i class="bi bi-check-circle"></i> Submit Exam
+                    </button>
+                </form>
+                {% else %}
+                <button type="button" class="btn btn-primary" 
+                        onclick="navigateQuestion({{ loop.index0 + 1 }})">
+                    Next <i class="bi bi-arrow-right"></i>
+                </button>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+
+        <div class="mt-4 p-3 bg-light rounded">
+            <h6>Quick Navigation:</h6>
+            <div class="question-nav">
+                {% for question in questions %}
+                <button type="button" class="btn btn-outline-primary btn-sm" 
+                        id="nav-btn-{{ loop.index0 }}"
+                        onclick="navigateQuestion({{ loop.index0 }})">
+                    {{ loop.index }}
+                </button>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentQuestionIndex = {{ current_index }};
+const totalQuestions = {{ questions|length }};
+let answers = {};
+let remainingSeconds = {{ remaining_time }} * 60;
+
+{% for qid, ans in answers.items() %}
+answers[{{ qid }}] = '{{ ans }}';
+{% endfor %}
+
+function updateTimer() {
+    if (remainingSeconds <= 0) {
+        document.getElementById('submitForm').submit();
+        return;
+    }
+    
+    const minutes = Math.floor(remainingSeconds / 60);
+    const seconds = remainingSeconds % 60;
+    document.getElementById('timer').textContent = 
+        `${minutes}:${seconds.toString().padStart(2, '0')}`;
+    
+    if (remainingSeconds <= 60) {
+        document.querySelector('.exam-timer').classList.remove('alert-warning');
+        document.querySelector('.exam-timer').classList.add('alert-danger');
+    }
+    
+    remainingSeconds--;
+}
+
+setInterval(updateTimer, 1000);
+
+function navigateQuestion(index) {
+    if (index < 0 || index >= totalQuestions) return;
+    
+    document.querySelectorAll('.question-container').forEach(q => q.style.display = 'none');
+    document.getElementById(`question-${index}`).style.display = 'block';
+    currentQuestionIndex = index;
+    
+    document.querySelectorAll('.question-nav button').forEach((btn, i) => {
+        btn.classList.toggle('btn-primary', i === index);
+        btn.classList.toggle('btn-outline-primary', i !== index);
+    });
+}
+
+function selectOption(questionId, answer, element) {
+    element.closest('.row').querySelectorAll('.option-card').forEach(card => {
+        card.classList.remove('selected');
+    });
+    
+    element.classList.add('selected');
+    answers[questionId] = answer;
+    
+    document.getElementById(`nav-btn-${currentQuestionIndex}`).classList.add('btn-success');
+    document.getElementById(`nav-btn-${currentQuestionIndex}`).classList.remove('btn-outline-primary');
+    
+    fetch(`{{ url_for('student.save_answer', exam_id=exam.id) }}`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+        },
+        body: `question_id=${questionId}&answer=${answer}`
+    });
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    {% for qid, ans in answers.items() %}
+    document.getElementById('nav-btn-{{ loop.index0 }}').classList.add('btn-success');
+    {% endfor %}
+});
+</script>
+{% endblock %}
+
+
+

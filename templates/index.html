@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Online Examination System{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8 mx-auto">
+        <div class="text-center mb-5">
+            <i class="bi bi-mortarboard-fill text-primary" style="font-size: 5rem;"></i>
+            <h1 class="display-4 mt-3">Welcome to Online Examination System</h1>
+            <p class="lead text-muted">A modern platform for conducting online MCQ-based examinations</p>
+        </div>
+
+        <div class="row g-4 mb-5">
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="bi bi-shield-check text-primary" style="font-size: 3rem;"></i>
+                        <h5 class="card-title mt-3">Secure</h5>
+                        <p class="card-text">Advanced security with password hashing and session management</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="bi bi-clock text-success" style="font-size: 3rem;"></i>
+                        <h5 class="card-title mt-3">Timed Exams</h5>
+                        <p class="card-text">Real-time exam timer with automatic submission</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="bi bi-graph-up text-info" style="font-size: 3rem;"></i>
+                        <h5 class="card-title mt-3">Instant Results</h5>
+                        <p class="card-text">Automatic result calculation and instant feedback</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card shadow">
+            <div class="card-body text-center p-5">
+                <h3 class="mb-4">Get Started Today</h3>
+                <div class="d-grid gap-2 d-md-flex justify-content-md-center">
+                    <a href="{{ url_for('auth.register') }}" class="btn btn-primary btn-lg px-5">
+                        <i class="bi bi-person-plus"></i> Register as Student
+                    </a>
+                    <a href="{{ url_for('auth.login') }}" class="btn btn-outline-primary btn-lg px-5">
+                        <i class="bi bi-box-arrow-in-right"></i> Login
+                    </a>
+                </div>
+                <p class="text-muted mt-4 mb-0">
+                    <small>Admin? Use your credentials to login</small>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

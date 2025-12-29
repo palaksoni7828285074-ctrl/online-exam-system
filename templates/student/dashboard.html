@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h2><i class="bi bi-house-fill"></i> Welcome, {{ student.name }}!</h2>
+    <p class="text-muted">Roll Number: {{ student.roll_number }} | Department: {{ student.department or 'N/A' }}</p>
+</div>
+
+<div class="card shadow mb-4">
+    <div class="card-header bg-primary text-white">
+        <h4 class="mb-0"><i class="bi bi-clipboard-check"></i> Available Exams</h4>
+    </div>
+    <div class="card-body">
+        {% if available_exams %}
+        <div class="row">
+            {% for exam in available_exams %}
+            <div class="col-md-6 mb-3">
+                <div class="card h-100">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0">{{ exam.title }}</h5>
+                    </div>
+                    <div class="card-body">
+                        <p><strong>Subject:</strong> {{ exam.subject.name }}</p>
+                        <p><strong>Duration:</strong> {{ exam.duration }} minutes</p>
+                        <p><strong>Total Marks:</strong> {{ exam.total_marks }}</p>
+                        <p><strong>Pass Marks:</strong> {{ exam.pass_marks }}</p>
+                        <p><strong>Questions:</strong> {{ exam.get_question_count() }}</p>
+                    </div>
+                    <div class="card-footer">
+                        <a href="{{ url_for('student.start_exam', exam_id=exam.id) }}" 
+                           class="btn btn-success w-100"
+                           onclick="return confirm('Start exam? Timer will begin immediately.');">
+                            <i class="bi bi-play-fill"></i> Start Exam
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-center text-muted">No exams available at the moment.</p>
+        {% endif %}
+    </div>
+</div>
+
+<div class="card shadow">
+    <div class="card-header bg-success text-white">
+        <h4 class="mb-0"><i class="bi bi-trophy"></i> Recent Results</h4>
+    </div>
+    <div class="card-body">
+        {% if recent_results %}
+        <div class="list-group">
+            {% for result in recent_results %}
+            <div class="list-group-item">
+                <div class="d-flex w-100 justify-content-between">
+                    <h5 class="mb-1">{{ result.exam.title }}</h5>
+                    <span class="badge {% if result.status == 'pass' %}bg-success{% else %}bg-danger{% endif %} fs-6">
+                        {{ result.status.upper() }}
+                    </span>
+                </div>
+                <p class="mb-1">Score: {{ result.score }}/{{ result.total_marks }} ({{ "%.2f"|format(result.percentage) }}%)</p>
+                <small class="text-muted">Attempted on: {{ result.attempted_at.strftime('%Y-%m-%d %H:%M') }}</small>
+                <div class="mt-2">
+                    <a href="{{ url_for('student.view_result', result_id=result.id) }}" class="btn btn-sm btn-primary">
+                        <i class="bi bi-eye"></i> View Details
+                    </a>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% else %}
+        <p class="text-center text-muted">You haven't taken any exams yet.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+

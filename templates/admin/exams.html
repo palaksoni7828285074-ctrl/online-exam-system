@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Exams{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2><i class="bi bi-file-text-fill"></i> Manage Exams</h2>
+    <a href="{{ url_for('admin.add_exam') }}" class="btn btn-primary">
+        <i class="bi bi-plus-circle"></i> Create Exam
+    </a>
+</div>
+
+<div class="row">
+    {% if exams %}
+        {% for exam in exams %}
+        <div class="col-md-6 mb-4">
+            <div class="card shadow h-100">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">{{ exam.title }}</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Subject:</strong> {{ exam.subject.name }} ({{ exam.subject.code }})</p>
+                    <p><strong>Duration:</strong> {{ exam.duration }} minutes</p>
+                    <p><strong>Total Marks:</strong> {{ exam.total_marks }}</p>
+                    <p><strong>Pass Marks:</strong> {{ exam.pass_marks }}</p>
+                    <p><strong>Questions:</strong> <span class="badge bg-primary">{{ exam.get_question_count() }}</span></p>
+                    <p><strong>Created:</strong> {{ exam.created_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                </div>
+                <div class="card-footer">
+                    <a href="{{ url_for('admin.questions', exam_id=exam.id) }}" class="btn btn-sm btn-success">
+                        <i class="bi bi-eye"></i> View Questions
+                    </a>
+                    <a href="{{ url_for('admin.add_question', exam_id=exam.id) }}" class="btn btn-sm btn-primary">
+                        <i class="bi bi-plus"></i> Add Questions
+                    </a>
+                    <form method="POST" action="{{ url_for('admin.delete_exam', id=exam.id) }}" 
+                          onsubmit="return confirm('Delete this exam?');"
+                          style="display: inline;">
+                        <button type="submit" class="btn btn-sm btn-danger">
+                            <i class="bi bi-trash"></i> Delete
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+    <div class="col-12">
+        <div class="alert alert-info text-center">
+            <p class="mb-0">No exams created yet. Create your first exam!</p>
+            <a href="{{ url_for('admin.add_exam') }}" class="btn btn-primary mt-3">
+                <i class="bi bi-plus-circle"></i> Create Exam
+            </a>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
